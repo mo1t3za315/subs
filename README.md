@@ -18,6 +18,7 @@
 npm install
 npm run dev      # http://localhost:3000
 npm run build    # بیلد تولیدی در dist/
+npm test         # تست‌های واحد (Vitest)
 ```
 
 نیازمند Node.js 20.19 یا جدیدتر است.
