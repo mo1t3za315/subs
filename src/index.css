@@ -282,6 +282,29 @@ body::before {
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 
+.readout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px 5px 11px;
+  background: #070d13;
+  border: 1px dashed var(--line-2);
+  border-radius: 10px;
+}
+
+.readout code {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+
 .input:hover {
   border-color: var(--line-2);
 }

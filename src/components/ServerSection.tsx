@@ -7,25 +7,29 @@ type Props = {
   settings: Settings
   set: <K extends keyof Settings>(key: K, value: Settings[K]) => void
   issues: Issue[]
+  detecting: boolean
+  onRedetect: () => void
 }
 
-export function ServerSection({ settings, set, issues }: Props) {
+export function ServerSection({ settings, set, issues, detecting, onRedetect }: Props) {
   const number = (key: keyof Settings) => (event: ChangeEvent<HTMLInputElement>) =>
     set(key, Number(event.target.value) as never)
 
   return (
     <SectionCard step="۰۱" title="سرور و شبکه" description="مقصد اتصال، آدرس‌های تونل و تنظیمات شبکه">
       <div className="grid">
-        <Field label="آدرس سرور" hint="IP یا دامنهٔ سرور شما" error={issueFor(issues, 'endpoint')} wide>
-          <Input
-            ltr
-            mono
-            placeholder="vpn.example.com"
-            value={settings.endpoint}
-            onChange={event => set('endpoint', event.target.value)}
-            autoComplete="off"
-            spellCheck={false}
-          />
+        <Field
+          label="آدرس سرور"
+          hint={detecting ? 'در حال تشخیص خودکار…' : 'به‌صورت خودکار تشخیص داده شد'}
+          error={detecting ? undefined : issueFor(issues, 'endpoint')}
+          wide
+        >
+          <div className="readout">
+            <code>{detecting ? 'در حال تشخیص…' : settings.endpoint || '—'}</code>
+            <button type="button" className="btn btn-ghost" onClick={onRedetect} disabled={detecting}>
+              {detecting ? 'صبر کنید' : 'تشخیص دوباره'}
+            </button>
+          </div>
         </Field>
 
         <Field label="پورت" error={issueFor(issues, 'port')}>

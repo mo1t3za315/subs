@@ -13,7 +13,7 @@ export function validate(settings: Settings): Issue[] {
   const endpoint = settings.endpoint.trim()
 
   if (!endpoint) {
-    issues.push({ field: 'endpoint', message: 'آدرس سرور (IP یا دامنه) را وارد کنید.' })
+    issues.push({ field: 'endpoint', message: 'آدرس سرور تشخیص داده نشد؛ «تشخیص دوباره» را بزنید.' })
   } else if (!/^[a-zA-Z0-9.\-:[\]]+$/.test(endpoint)) {
     issues.push({ field: 'endpoint', message: 'آدرس سرور معتبر نیست.' })
   }

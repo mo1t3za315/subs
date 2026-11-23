@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Header } from './components/Header'
 import { KeysSection } from './components/KeysSection'
 import { ModeSwitch } from './components/ModeSwitch'
@@ -8,6 +8,7 @@ import { ServerSection } from './components/ServerSection'
 import { buildAmneziaJson, buildVpnUri } from './lib/amnezia'
 import { buildClientConfig, buildServerConfig } from './lib/config'
 import { createDefaultSettings } from './lib/defaults'
+import { detectServerHost } from './lib/endpoint'
 import { publicKeyFromPrivate } from './lib/keys'
 import type { AwgParams, Mode, Settings } from './lib/types'
 import { validate } from './lib/validate'
@@ -23,6 +24,19 @@ export default function App() {
     setSettings(previous => ({ ...previous, awg: { ...previous.awg, [key]: value } }))
 
   const replaceAwg = (awg: AwgParams) => setSettings(previous => ({ ...previous, awg }))
+
+  const [detectingHost, setDetectingHost] = useState(true)
+
+  const detectHost = useCallback(async () => {
+    setDetectingHost(true)
+    const host = await detectServerHost()
+    setSettings(previous => ({ ...previous, endpoint: host }))
+    setDetectingHost(false)
+  }, [])
+
+  useEffect(() => {
+    void detectHost()
+  }, [detectHost])
 
   const serverPublicKey = useMemo(() => publicKeyFromPrivate(settings.serverPrivateKey), [settings.serverPrivateKey])
   const clientPublicKey = useMemo(() => publicKeyFromPrivate(settings.clientPrivateKey), [settings.clientPrivateKey])
@@ -64,7 +78,13 @@ export default function App() {
       <main className="layout">
         <div className="col col-form">
           <ModeSwitch mode={settings.mode} onChange={(mode: Mode) => set('mode', mode)} />
-          <ServerSection settings={settings} set={set} issues={issues} />
+          <ServerSection
+            settings={settings}
+            set={set}
+            issues={issues}
+            detecting={detectingHost}
+            onRedetect={detectHost}
+          />
           {settings.mode === 'awg' ? (
             <ObfuscationSection awg={settings.awg} setAwg={setAwg} onReplace={replaceAwg} />
           ) : null}
